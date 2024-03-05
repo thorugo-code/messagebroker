@@ -1,7 +1,6 @@
-import sys
-import ssl
 import json
 import pika
+import ssl
 from datetime import datetime
 
 

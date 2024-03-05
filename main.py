@@ -15,7 +15,6 @@ from models import *
 """
 
 if __name__ == "__main__":
-    routine = sys.argv[1] if len(sys.argv) > 1 else 'send'
 
     try:
         with open('config.json', 'r') as file:
@@ -29,17 +28,12 @@ if __name__ == "__main__":
     except FileNotFoundError:
         raise FileNotFoundError('File config.json not found, create it with user, password and endpoint keys.')
 
-    if routine == 'send':
-        message = json.dumps({"message": "TEST MESSAGE", "time": datetime.now().strftime("%d/%m/%Y %H:%M:%S")})
-        try:
-            send(endpoint, vhost, queue, message, user, password)
-        except pika.exceptions.ProbableAuthenticationError:
-            print('Connection error, check if the RabbitMQ is running or user has permission to access the queue.')
+    except KeyError:
+        raise KeyError('File config.json must have user, password, endpoint, vhost and queue keys.')
 
-    elif routine == 'receive':
-        try:
-            receive(endpoint, vhost, queue, user, password)
-        except pika.exceptions.ProbableAuthenticationError:
-            print('Connection error, check if the RabbitMQ is running or user has permission to access the queue.')
-        except KeyboardInterrupt:
-            print('Exiting...')
+    try:
+        receive(endpoint, vhost, queue, user, password)
+    except KeyboardInterrupt:
+        print('Exiting...')
+    except Exception as e:
+        print(f'An error occurred: ({type(e)}) {e}. Exiting...')
