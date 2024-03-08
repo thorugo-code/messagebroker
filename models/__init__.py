@@ -1,9 +1,7 @@
 import boto3
-import time
 import json
 import pika
 import ssl
-from datetime import datetime
 
 
 def amqps(endpoint):
@@ -71,8 +69,6 @@ def receive(endpoint, vhost, queue, username, password, bucket=None):
             s3_bucket=bucket
         )
 
-        print(f'\t[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] Received "{(body.decode('utf-8'))[:20]}{'...' if len((body.decode('utf-8'))) > 20 else ''}" at "/{vhost}/{queue}"')
-
     try:
         channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=True)
     except pika.exceptions.ChannelClosedByBroker:
@@ -81,3 +77,17 @@ def receive(endpoint, vhost, queue, username, password, bucket=None):
 
     print(f'Connected to {endpoint}/{vhost}/{queue}\nWaiting for messages. To exit press CTRL+C')
     channel.start_consuming()
+
+
+def readable_time(total_time: float) -> str:
+
+    hours = int(total_time // 3600)
+    minutes = int((total_time % 3600) // 60)
+    seconds = int((total_time % 3600) % 60)
+
+    if hours != 0:
+        return f"{hours}h{minutes}min{seconds}s"
+    elif minutes != 0:
+        return f"{minutes}min{seconds}s"
+    else:
+        return f"{seconds}s"

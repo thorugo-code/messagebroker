@@ -1,4 +1,6 @@
+import time
 from models import *
+from datetime import datetime
 
 """ config.json example:
 
@@ -47,8 +49,8 @@ if __name__ == "__main__":
                 s3_bucket = data.get('aws', {}).get('s3_bucket', None)
                 receive(endpoint, vhost, queue, user, password, bucket=s3_bucket)
             except Exception as e:
-                print(f'\t[x] An error occurred: ({type(e)}) {e}. Restarting...')
+                print(f'\t[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] An error occurred: ({type(e)}) {e}. Restarting...')
                 errors += 1
 
     except KeyboardInterrupt:
-        print(f'Execution time: {round(time.time() - start, 2)} s\n{errors} errors occurred during the execution.\nExiting...')
+        print(f'Execution time: {readable_time(time.time() - start)}\n{errors} errors occurred during the execution.\nExiting...')
