@@ -12,42 +12,6 @@ def amqps(endpoint):
     return host, port
 
 
-def send(endpoint, vhost, queue, data_to_send, username, password):
-    host, port = amqps(endpoint)
-
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(
-            host, port, vhost, pika.PlainCredentials(username, password),
-            ssl_options=pika.SSLOptions(ssl.create_default_context())
-        )
-    )
-
-    channel = connection.channel()
-
-    try:
-        channel.queue_declare(queue=queue)
-    except pika.exceptions.ChannelClosedByBroker:
-        try:
-            channel = connection.channel()
-            channel.queue_declare(queue=queue, passive=True)
-        except pika.exceptions.ChannelWrongStateError:
-            print(f"Tried to declare queue '{queue}' in 'endpoint/{vhost}' but the connection is closed...")
-
-    try:
-        channel.basic_publish(exchange='', routing_key=queue, body=data_to_send)
-    except Exception as e:
-        print(f"User {username} doesn't have permission to access 'endpoint/{vhost}/{queue}' "
-              f"or the queue doesn't exist. Exiting...")
-        return
-
-    if len(data_to_send) <= 20:
-        print(f" [x] User '{username}' sent '{data_to_send}' to 'endpoint/{vhost}/{queue}'")
-    else:
-        print(f" [x] User '{username}' sent '{data_to_send[:20]}...' to 'endpoint/{vhost}/{queue}'")
-
-    connection.close()
-
-
 def write_json(new_data, s3_client=None, s3_bucket=None, object_key='data.json'):
     if s3_bucket is not None:
         try:
@@ -85,8 +49,14 @@ def receive(endpoint, vhost, queue, username, password, bucket=None):
 
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
-            host, port, vhost, pika.PlainCredentials(username, password),
-            ssl_options=pika.SSLOptions(ssl.create_default_context())
+            host=host,
+            port=port,
+            virtual_host=vhost,
+            credentials=pika.PlainCredentials(username, password),
+            ssl_options=pika.SSLOptions(ssl.create_default_context()),
+            heartbeat=300,
+            blocked_connection_timeout=300,
+            connection_attempts=5,
         )
     )
 

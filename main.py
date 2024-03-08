@@ -9,42 +9,48 @@ from models import *
     "endpoint": "amqps://your-endpoint.mq.area.amazonaws.com:port",
     "vhost": "your-vhost",
     "queue": "your-queue"
+  },
+  !optional
+  "aws": {
+    "s3_bucket": "your-bucket-name"   
   }
 }
+
+OBS: The s3_bucket key, such as aws, is optional. If you want to save the data to an S3 bucket, set it on config.json. 
+     Else, it will be saved to a local file.
 
 """
 
 if __name__ == "__main__":
 
     start = time.time()
+    errors = 0
 
     try:
-        with open('config.json', 'r') as file:
-            data = json.load(file)
-            user = data['rabbitmq']['username']
-            password = data['rabbitmq']['password']
-            endpoint = data['rabbitmq']['endpoint']
-            vhost = data['rabbitmq']['vhost']
-            queue = data['rabbitmq']['queue']
+        while True:     # Infinite loop to keep the program running
+            try:
+                with open('config.json', 'r') as file:
+                    data = json.load(file)
+                    user = data['rabbitmq']['username']
+                    password = data['rabbitmq']['password']
+                    endpoint = data['rabbitmq']['endpoint']
+                    vhost = data['rabbitmq']['vhost']
+                    queue = data['rabbitmq']['queue']
 
-    except FileNotFoundError:
-        raise FileNotFoundError('File config.json not found, create it with user, password and endpoint keys.')
+            except FileNotFoundError:
+                raise FileNotFoundError('File config.json not found, create it with user, password and endpoint keys.')
 
-    except KeyError:
-        raise KeyError('File config.json must have user, password, endpoint, vhost and queue keys.')
+            except KeyError:
+                raise KeyError('File config.json must have user, password, endpoint, vhost and queue keys.')
 
-    try:
-        """
-        If you want to save the data to an S3 bucket, set the bucket name here
-        Else, leave it as None by default and the data will be saved to a local file
-        Example: s3_bucket = 'your-bucket-name'
-        """
+            try:
+                s3_bucket = data.get('aws', {}).get('s3_bucket', None)
+                receive(endpoint, vhost, queue, user, password, bucket=s3_bucket)
+            except Exception as e:
+                print(f'\t[x] An error occurred: ({type(e)}) {e}. Restarting...')
+                errors += 1
 
-        s3_bucket = None
-        receive(endpoint, vhost, queue, user, password, bucket=s3_bucket)
     except KeyboardInterrupt:
-        print('Exiting...')
-    except Exception as e:
-        print(f'An error occurred: ({type(e)}) {e}. Exiting...')
-
-    print(f"Execution time: {round(time.time() - start, 2)} seconds")
+        print(f'Execution time: {round(time.time() - start, 2)} s\n'
+              f'{errors} errors occurred during the execution.\n'
+              f'Exiting...')
