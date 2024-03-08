@@ -71,8 +71,7 @@ def receive(endpoint, vhost, queue, username, password, bucket=None):
             s3_bucket=bucket
         )
 
-        print(f"\t[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] Received '{(body.decode('utf-8'))[:20]}"
-              f"{'...' if len((body.decode('utf-8'))) > 20 else ''}' at '/{vhost}/{queue}'")
+        print(f'\t[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] Received "{(body.decode('utf-8'))[:20]}{'...' if len((body.decode('utf-8'))) > 20 else ''}" at "/{vhost}/{queue}"')
 
     try:
         channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=True)

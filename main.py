@@ -51,6 +51,4 @@ if __name__ == "__main__":
                 errors += 1
 
     except KeyboardInterrupt:
-        print(f'Execution time: {round(time.time() - start, 2)} s\n'
-              f'{errors} errors occurred during the execution.\n'
-              f'Exiting...')
+        print(f'Execution time: {round(time.time() - start, 2)} s\n{errors} errors occurred during the execution.\nExiting...')
