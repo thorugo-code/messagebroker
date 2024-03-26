@@ -17,6 +17,10 @@ def write_json(new_data, s3_client=None, s3_bucket=None, object_key='data.json')
             try:
                 response = s3_client.get_object(Bucket=s3_bucket, Key=object_key)
                 existing_data = json.loads(response['Body'].read().decode('utf-8'))
+                if "received_data" not in existing_data:
+                    existing_data["received_data"] = []
+                else:
+                    existing_data["received_data"] = existing_data["received_data"][-999:]
             except s3_client.exceptions.NoSuchKey:
                 pass
 
