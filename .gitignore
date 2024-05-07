@@ -162,3 +162,5 @@ cython_debug/
 # Custom
 data.json
 config.json
+data/
+.data/
