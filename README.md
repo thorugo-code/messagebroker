@@ -1,1 +1,1 @@
-# Message Broker
+# RabbitMQ forwarder to HTTP
