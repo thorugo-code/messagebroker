@@ -8,9 +8,9 @@ Config function is used to read the variables by name.
 """
 
 
-USERNAME = config('RABBITMQ_USERNAME', default='admin')
+USERNAME = config('RABBITMQ_USER', default='admin')
 PASSWORD = config('RABBITMQ_PASSWORD', default='admin')
-ENDPOINT = config('RABBITMQ_ENDPOINT', default='localhost')
+HOST = config('RABBITMQ_HOST', default='localhost')
 PORT = config('RABBITMQ_PORT', default='5672')
 VHOST = config('RABBITMQ_VHOST', default='/')
 QUEUE = config('RABBITMQ_QUEUE', default='default')

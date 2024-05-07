@@ -1,4 +1,4 @@
-from models.server import start
+from models.data import consume
 
 """
 
@@ -8,4 +8,8 @@ Check models/settings.py for more information.
 """
 
 if __name__ == "__main__":
-    start()
+    try:
+        consume()
+    except KeyboardInterrupt:
+        print('Exiting...')
+        exit(3)
