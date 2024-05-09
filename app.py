@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from models.settings import API_URL, API_PORT
 from models.data import read_json
 import uvicorn
 
@@ -18,4 +19,4 @@ async def read_data(data_id):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run('app:app', host=API_URL, port=API_PORT, reload=True)
