@@ -9,7 +9,8 @@ Check models/settings.py for more information.
 
 if __name__ == "__main__":
     try:
-        consume()
+        while True:
+            consume()
     except KeyboardInterrupt:
         print('Exiting...')
         exit(3)
