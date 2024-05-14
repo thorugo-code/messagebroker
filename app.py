@@ -58,7 +58,8 @@ async def read_data(data_id, service):
 
 if __name__ == "__main__":
     try:
-        uvicorn.run('app:app', host=API_URL, port=API_PORT, reload=True)
+        while True:
+            uvicorn.run('app:app', host=API_URL, port=API_PORT, reload=True)
     except KeyboardInterrupt:
         print('Exiting...')
         exit(3)
