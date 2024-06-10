@@ -61,39 +61,6 @@ def write_json(new_data, file, s3_client=S3_CLIENT, s3_bucket=S3_BUCKET):
                 json.dump({"received_data": [new_data]}, json_file, indent=4)
 
 
-def read_json(file, s3_client=S3_CLIENT, s3_bucket=S3_BUCKET) -> dict | str:
-    if s3_bucket and s3_client:
-        try:
-            response = s3_client.get_object(Bucket=s3_bucket, Key=f'{file}.json')
-            existing_data = json.loads(response['Body'].read().decode('utf-8'))
-            if "received_data" not in existing_data:
-                return 'Data not found!'
-
-            else:
-                try:
-                    return existing_data["received_data"][-1]
-                except IndexError:
-                    return 'Waiting messages!'
-
-        except s3_client.exceptions.NoSuchKey:
-            return 'Data not found!'
-
-    else:
-
-        try:
-            with open(f'data/{file}.json', 'r') as json_file:
-                data = json.load(json_file)
-                response = data["received_data"][-1]
-
-            return response
-
-        except FileNotFoundError:
-            return 'Data not found!'
-
-        except IndexError:
-            return 'Waiting messages!'
-
-
 def consume():
 
     connection = pika.BlockingConnection(
