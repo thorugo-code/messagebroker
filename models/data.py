@@ -32,7 +32,7 @@ def write_json(new_data, file, s3_client=S3_CLIENT, s3_bucket=S3_BUCKET):
             if "received_data" not in existing_data:
                 existing_data["received_data"] = []
             else:
-                existing_data["received_data"] = existing_data["received_data"][-49:]
+                existing_data["received_data"] = existing_data["received_data"][-1199:]
         except s3_client.exceptions.NoSuchKey:
             pass
 
